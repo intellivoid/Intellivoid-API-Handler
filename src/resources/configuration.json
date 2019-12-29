@@ -1,3 +1,29 @@
 {
-
+	"NAME": "Demo API",
+	"DOCUMENTATION_URL": "https://example.com/",
+	"BASE_PATH": "/openblu",
+	"AVAILABLE": true,
+	"UNAVAILABLE_MESSAGE": "This API configuration is not available right now",
+	"VERSION_CONFIGURATIONS": [
+		{
+			"VERSION": "v1",
+			"AVAILABLE": true,
+			"UNAVAILABLE_MESSAGE": "This version is not available at the moment, please check back later",
+			"LIBRARIES": {
+				"IntellivoidAPI": {
+					"DIRECTORY_NAME": "IntellivoidAPI",
+					"AUTOLOADER": "IntellivoidAPI.php",
+					"NAMESPACE": "IntellivoidAPI",
+					"MAIN_CLASS": "IntellivoidAPI",
+					"CHECK_EXISTS": true
+				}
+			},
+			"MODULES": [
+				{
+					"script": "ping", "path": "tests/ping",
+					"available": true, "authentication_required": true
+				}
+			]
+		}
+	]
 }
