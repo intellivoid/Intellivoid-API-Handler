@@ -224,7 +224,34 @@
 
                 if(isset(self::$PathRoutes[$version][$path]))
                 {
-                    print(self::$PathRoutes[$version][$path]);
+                    /** @var VersionConfiguration $VersionConfiguration */
+                    $VersionConfiguration = self::$MainConfiguration->VersionConfigurations[$version];
+                    $ModuleConfiguration = $VersionConfiguration->Modules[self::$PathRoutes[$version][$path]];
+
+                    /** @var Module $ModuleObject */
+                    $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);
+
+                    // Process the request
+                    try
+                    {
+                        $ModuleObject->processRequest();
+                    }
+                    catch(Exception $exception)
+                    {
+                        print("error");
+                    }
+
+                    header('Content-Type: ' . $ModuleObject->getContentType());
+                    header('Content-Size: ' . $ModuleObject->getContentLength());
+
+                    // Create the response
+                    if($ModuleObject->isFile())
+                    {
+                        header("Content-disposition: attachment; filename=\"" . basename($ModuleObject->getFileName()) . "\"");
+                    }
+
+                    print($ModuleObject->getBodyContent());
+                    exit();
                 }
                 else
                 {
