@@ -6,6 +6,7 @@
     // Define the directory locations
     use Exception;
     use Handler\Abstracts\Module;
+    use Handler\GenericResponses\UnsupportedVersion;
     use Handler\Objects\Library;
     use Handler\Objects\MainConfiguration;
     use Handler\Objects\ModuleConfiguration;
@@ -21,6 +22,7 @@
     // Auto-Include the core files
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Interfaces' . DIRECTORY_SEPARATOR . 'Response.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Abstracts' . DIRECTORY_SEPARATOR . 'Module.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'UnsupportedVersion.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'Library.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'MainConfiguration.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'ModuleConfiguration.php');
@@ -122,22 +124,7 @@
             self::$Router->map('GET|POST', '/[a:version]', function(string $version){
                 if(isset(Handler::$MainConfiguration->VersionConfigurations[$version]) == false)
                 {
-                    $ResponsePayload = array(
-                        'success' => false,
-                        'response_code' => 400,
-                        'error' => array(
-                            'error_code' => 1,
-                            'type' => "SERVER",
-                            "message" => "The given version for this API is not supported"
-                        ),
-                        'reference_code' => null
-                    );
-                    $ResponseBody = json_encode($ResponsePayload);
-
-                    http_response_code(400);
-                    header('Content-Type: application/json');
-                    header('Content-Size: ' . strlen($ResponseBody));
-                    print($ResponseBody);
+                    UnsupportedVersion::executeResponse();
                     exit();
                 }
                 else
