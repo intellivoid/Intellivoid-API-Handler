@@ -240,6 +240,12 @@
                     /** @var ModuleConfiguration $ModuleConfiguration */
                     $ModuleConfiguration = $VersionConfiguration->Modules[self::$PathRoutes[$version][$path]];
 
+                    if($VersionConfiguration->Available == false)
+                    {
+                        ResourceNotAvailable::executeResponse($VersionConfiguration->UnavailableMessage);
+                        exit();
+                    }
+
                     if($ModuleConfiguration->Available == false)
                     {
                         ResourceNotAvailable::executeResponse($ModuleConfiguration->UnavailableMessage);
