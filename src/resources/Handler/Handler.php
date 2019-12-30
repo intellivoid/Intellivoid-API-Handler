@@ -6,6 +6,7 @@
     // Define the directory locations
     use Exception;
     use Handler\Abstracts\Module;
+    use Handler\GenericResponses\Root;
     use Handler\GenericResponses\UnsupportedVersion;
     use Handler\Objects\Library;
     use Handler\Objects\MainConfiguration;
@@ -22,6 +23,7 @@
     // Auto-Include the core files
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Interfaces' . DIRECTORY_SEPARATOR . 'Response.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Abstracts' . DIRECTORY_SEPARATOR . 'Module.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'Root.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'UnsupportedVersion.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'Library.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'MainConfiguration.php');
@@ -43,21 +45,21 @@
          *
          * @var array
          */
-        private static $ConfigurationData;
+        public static $ConfigurationData;
 
         /**
          * Main configuration object
          *
          * @var MainConfiguration
          */
-        private static $MainConfiguration;
+        public static $MainConfiguration;
 
         /**
          * Path routes for versions
          *
          * @var array
          */
-        private static $PathRoutes;
+        public static $PathRoutes;
 
         /**
          * The HTTP router
@@ -95,21 +97,7 @@
         private static function createRootRoute()
         {
             self::$Router->map('GET|POST', '/', function(){
-                $ResponsePayload = array(
-                    'success' => true,
-                    'response_code' => 200,
-                    'payload' => array(
-                        'service_name' => Handler::$MainConfiguration->Name,
-                        'documentation' => Handler::$MainConfiguration->DocumentationUrl
-                    ),
-                    'reference_code' => null
-                );
-                $ResponseBody = json_encode($ResponsePayload);
-
-                http_response_code(200);
-                header('Content-Type: application/json');
-                header('Content-Size: ' . strlen($ResponseBody));
-                print($ResponseBody);
+                Root::executeResponse();
                 exit();
             });
         }
