@@ -22,11 +22,16 @@
 			"MODULES": [
 				{
 					"script": "ping", "path": "tests/ping",
-					"available": true, "authentication_required": true,
+					"available": true, "authentication_required": false,
 					"unavailable_message": "This module is not available at the moment"
 				},
 				{
 					"script": "download", "path": "tests/download",
+					"available": true, "authentication_required": false,
+					"unavailable_message": "This module is not available at the moment"
+				},
+				{
+					"script": "whoami", "path": "tests/whoami",
 					"available": true, "authentication_required": true,
 					"unavailable_message": "This module is not available at the moment"
 				}
