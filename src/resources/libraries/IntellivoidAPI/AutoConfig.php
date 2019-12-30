@@ -20,7 +20,7 @@
     $DatabaseSchema->setDefinition('Port', '3306');
     $DatabaseSchema->setDefinition('Username', 'root');
     $DatabaseSchema->setDefinition('Password', '');
-    $DatabaseSchema->setDefinition('Name', 'intellivoid');
+    $DatabaseSchema->setDefinition('Name', 'intellivoid_api');
     $acm->defineSchema('Database', $DatabaseSchema);
 
     // If auto-loaded via CLI, Process any arguments passed to the main execution point

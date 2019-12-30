@@ -36,6 +36,7 @@
     include_once($LocalDirectory . 'Utilities' . DIRECTORY_SEPARATOR . 'Hashing.php');
     include_once($LocalDirectory . 'Utilities' . DIRECTORY_SEPARATOR . 'Validate.php');
 
+    include_once($LocalDirectory . 'AutoConfig.php');
 
     if(class_exists('acm\acm') == false)
     {
@@ -88,7 +89,7 @@
          */
         public function __construct()
         {
-            $this->acm = new acm(__DIR__, 'Intellivoid Accounts');
+            $this->acm = new acm(__DIR__, 'Intellivoid API');
 
             try
             {

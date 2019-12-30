@@ -10,11 +10,18 @@
     use Handler\GenericResponses\ResourceNotAvailable;
     use Handler\GenericResponses\ResourceNotFound;
     use Handler\GenericResponses\Root;
+    use Handler\GenericResponses\UnauthorizedResponse;
     use Handler\GenericResponses\UnsupportedVersion;
     use Handler\Objects\Library;
     use Handler\Objects\MainConfiguration;
     use Handler\Objects\ModuleConfiguration;
     use Handler\Objects\VersionConfiguration;
+    use IntellivoidAPI\Abstracts\SearchMethods\AccessRecordSearchMethod;
+    use IntellivoidAPI\Exceptions\AccessRecordNotFoundException;
+    use IntellivoidAPI\Exceptions\DatabaseException;
+    use IntellivoidAPI\Exceptions\InvalidSearchMethodException;
+    use IntellivoidAPI\IntellivoidAPI;
+    use IntellivoidAPI\Objects\AccessRecord;
 
     define("HANDLER_DIRECTORY", __DIR__, false);
     define("LIBRARIES_DIRECTORY", __DIR__ . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . 'libraries', false);
@@ -30,6 +37,7 @@
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotAvailable.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotFound.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'Root.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'UnauthorizedResponse.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'UnsupportedVersion.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'Library.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'MainConfiguration.php');
@@ -75,6 +83,13 @@
         public static $Router;
 
         /**
+         * Intellivoid API Object, can be null if not initialized
+         *
+         * @var IntellivoidAPI
+         */
+        private static $IntellivoidAPI;
+
+        /**
          * Loads the local configuration to memory
          *
          * @throws Exception
@@ -106,6 +121,84 @@
                 Root::executeResponse();
                 exit();
             });
+        }
+
+        /**
+         * Gets GET/POST Parameters combined, this can be altered.
+         * POST Parameters can override GET Parameters
+         *
+         * @param bool $get
+         * @param bool $post
+         * @return array
+         */
+        private static function getParameters(bool $get=true, bool $post=true): array
+        {
+            $parameters = array();
+
+            if($get)
+            {
+                foreach($_GET as $value => $item)
+                {
+                    $parameters[$value] = $item;
+                }
+            }
+
+            if($post)
+            {
+                foreach($_POST as $value => $item)
+                {
+                    $parameters[$value] = $item;
+                }
+            }
+
+            return $parameters;
+        }
+
+        /**
+         * Authenticates the user and returns the Access Record once authenticated
+         *
+         * @return AccessRecord
+         */
+        public static function authenticateUser(): AccessRecord
+        {
+            $AccessKey = null;
+
+            if(isset(self::getParameters()['access_key']))
+            {
+                $AccessKey = self::getParameters()['access_key'];
+            }
+
+            if($AccessKey == null)
+            {
+                if (isset($_SERVER['PHP_AUTH_USER']) == false)
+                {
+                    UnauthorizedResponse::executeResponse();
+                    exit();
+                }
+                else
+                {
+                    $AccessKey = $_SERVER['PHP_AUTH_PW'];
+                }
+            }
+
+            try
+            {
+                $AccessRecord = self::getIntellivoidAPI()->getAccessKeyManager()->getAccessRecord(
+                    AccessRecordSearchMethod::byAccessKey, $AccessKey
+                );
+            }
+            catch (AccessRecordNotFoundException $e)
+            {
+                UnauthorizedResponse::executeResponse();
+                exit();
+            }
+            catch(Exception $e)
+            {
+                InternalServerError::executeResponse($e);
+                exit();
+            }
+
+            return $AccessRecord;
         }
 
         /**
@@ -237,6 +330,7 @@
                 {
                     /** @var VersionConfiguration $VersionConfiguration */
                     $VersionConfiguration = self::$MainConfiguration->VersionConfigurations[$version];
+
                     /** @var ModuleConfiguration $ModuleConfiguration */
                     $ModuleConfiguration = $VersionConfiguration->Modules[self::$PathRoutes[$version][$path]];
 
@@ -252,8 +346,17 @@
                         exit();
                     }
 
+                    $AccessRecord = new AccessRecord();
+                    $AccessRecord->ID = 0;
+
+                    if($ModuleConfiguration->AuthenticationRequired)
+                    {
+                        $AccessRecord = self::authenticateUser();
+                    }
+
                     /** @var Module $ModuleObject */
                     $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);
+                    $ModuleObject->access_record = $AccessRecord;
                     self::processModuleResponse($ModuleObject);
                     exit();
                 }
@@ -303,5 +406,20 @@
                     self::$PathRoutes[strtolower($versionConfiguration->Version)][strtolower($module->Path)] = $module->Script;
                 }
             }
+        }
+
+        /**
+         * Returns the IntellivoidAPI, if not constructed it will construct it
+         *
+         * @return IntellivoidAPI
+         */
+        public static function getIntellivoidAPI(): IntellivoidAPI
+        {
+            if(self::$IntellivoidAPI == null)
+            {
+                self::$IntellivoidAPI = new IntellivoidAPI();
+            }
+
+            return self::$IntellivoidAPI;
         }
     }
