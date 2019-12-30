@@ -6,6 +6,7 @@
     // Define the directory locations
     use Exception;
     use Handler\Abstracts\Module;
+    use Handler\GenericResponses\InternalServerError;
     use Handler\GenericResponses\ResourceNotAvailable;
     use Handler\GenericResponses\ResourceNotFound;
     use Handler\GenericResponses\Root;
@@ -25,6 +26,7 @@
     // Auto-Include the core files
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Interfaces' . DIRECTORY_SEPARATOR . 'Response.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Abstracts' . DIRECTORY_SEPARATOR . 'Module.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'InternalServerError.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotAvailable.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotFound.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'Root.php');
@@ -204,7 +206,8 @@
             }
             catch(Exception $exception)
             {
-                print("error");
+                InternalServerError::executeResponse($exception);
+                exit();
             }
 
             header('Content-Type: ' . $module->getContentType());

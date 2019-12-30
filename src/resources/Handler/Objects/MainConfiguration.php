@@ -47,6 +47,13 @@
         public $UnavailableMessage;
 
         /**
+         * If enabled, debugging information about the exception would be displayed
+         *
+         * @var bool
+         */
+        public $DebugExceptions;
+
+        /**
          * Array of configurations for versions
          *
          * @var array
@@ -74,6 +81,7 @@
                 'BASE_PATH' => $this->BasePath,
                 'AVAILABLE' => (bool)$this->Available,
                 'UNAVAILABLE_MESSAGE' => $this->UnavailableMessage,
+                'DEBUG_EXCEPTIONS' => (bool)$this->DebugExceptions,
                 'VERSION_CONFIGURATIONS' => $VersionConfigurations
             );
         }
@@ -111,6 +119,11 @@
             if(isset($data['UNAVAILABLE_MESSAGE']))
             {
                 $MainConfigurationObject->UnavailableMessage = $data['UNAVAILABLE_MESSAGE'];
+            }
+
+            if(isset($data['DEBUG_EXCEPTIONS']))
+            {
+                $MainConfigurationObject->DebugExceptions = (bool)$data['DEBUG_EXCEPTIONS'];
             }
 
             if(isset($data['VERSION_CONFIGURATIONS']))

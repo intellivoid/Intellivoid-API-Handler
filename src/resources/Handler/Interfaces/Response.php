@@ -33,6 +33,13 @@
         public function getBodyContent(): string;
 
         /**
+         * Returns the HTTP response code
+         *
+         * @return int
+         */
+        public function getResponseCode(): int;
+
+        /**
          * Indicates if the response is a file download
          *
          * @return bool

@@ -73,6 +73,14 @@
         /**
          * @inheritDoc
          */
+        public function getResponseCode(): int
+        {
+            return 200;
+        }
+
+        /**
+         * @inheritDoc
+         */
         public function isFile(): bool
         {
             return true;
