@@ -85,6 +85,11 @@
             }
         }
 
+        /**
+         * Creates a route for the root
+         *
+         * @throws Exception
+         */
         private static function createRootRoute()
         {
             self::$Router->map('GET|POST', '/', function(){
@@ -107,6 +112,11 @@
             });
         }
 
+        /**
+         * Creates a route for the version
+         *
+         * @throws Exception
+         */
         private static function createVersionRoute()
         {
             self::$Router->map('GET|POST', '/[a:version]', function(string $version){
@@ -114,17 +124,17 @@
                 {
                     $ResponsePayload = array(
                         'success' => false,
-                        'response_code' => 404,
+                        'response_code' => 400,
                         'error' => array(
                             'error_code' => 0,
                             'type' => "SERVER",
-                            "message" => "The given version for this API is unsupported"
+                            "message" => "The given version for this API is not supported"
                         ),
                         'reference_code' => null
                     );
                     $ResponseBody = json_encode($ResponsePayload);
 
-                    http_response_code(200);
+                    http_response_code(400);
                     header('Content-Type: application/json');
                     header('Content-Size: ' . strlen($ResponseBody));
                     print($ResponseBody);
@@ -140,28 +150,12 @@
                     /** @var ModuleConfiguration $module */
                     foreach($VersionConfiguration->Modules as $module)
                     {
-                        $VersionDirectory = MODULES_DIRECTORY . DIRECTORY_SEPARATOR . $version;
-                        $ScriptPath = $VersionDirectory . DIRECTORY_SEPARATOR . $module->Script . '.php';
-
-                        if(file_exists($VersionDirectory) == false)
-                        {
-                            throw new Exception("The version directory '" . $version . "' was not found");
-                        }
-
-                        if(file_exists($ScriptPath) == false)
-                        {
-                            throw new Exception("The script '" . $module->Path . "' was not found");
-                        }
-
-                        require_once($ScriptPath);
-
-                        $script_namespace = 'modules\\' .  $version . '\\' . $module->Script;
-                        $module_class = new $script_namespace();
+                        $ModuleObject = self::getModuleObject($version, $module);
 
                         $Modules['/' . $module->Path] = array(
-                            'name' => $module_class->name,
-                            'version' => $module_class->version,
-                            'description' => $module_class->description
+                            'name' => $ModuleObject->name,
+                            'version' => $ModuleObject->version,
+                            'description' => $ModuleObject->description
                         );
                     }
 
@@ -183,6 +177,45 @@
             });
         }
 
+        /** @noinspection DuplicatedCode */
+        /**
+         * Constructs the module object from a module configuration
+         *
+         * @param string $version
+         * @param ModuleConfiguration $moduleConfiguration
+         * @return Module
+         * @throws Exception
+         */
+        public static function getModuleObject(string $version, ModuleConfiguration $moduleConfiguration): Module
+        {
+            $VersionDirectory = MODULES_DIRECTORY . DIRECTORY_SEPARATOR . $version;
+            $ScriptPath = $VersionDirectory . DIRECTORY_SEPARATOR . $moduleConfiguration->Script . '.php';
+
+            if(file_exists($VersionDirectory) == false)
+            {
+                throw new Exception("The version directory '" . $version . "' was not found");
+            }
+
+            if(file_exists($ScriptPath) == false)
+            {
+                throw new Exception("The script '" . $moduleConfiguration->Path . "' was not found");
+            }
+
+            require_once($ScriptPath);
+
+            $script_namespace = 'modules\\' .  $version . '\\' . $moduleConfiguration->Script;
+
+            /** @var Module $module_object */
+            $module_object = new $script_namespace();
+
+            return $module_object;
+        }
+
+        /**
+         * Creates a route for the module
+         *
+         * @throws Exception
+         */
         private static function createModuleRoute()
         {
             self::$Router->map('GET|POST', '/[a:version]/[**:path]', function(string $version, string $path){
@@ -195,7 +228,23 @@
                 }
                 else
                 {
-                    print("Not found");
+                    $ResponsePayload = array(
+                        'success' => false,
+                        'response_code' => 404,
+                        'error' => array(
+                            'error_code' => 0,
+                            'type' => "SERVER",
+                            "message" => "The requested resource/action is invalid or not found"
+                        ),
+                        'reference_code' => null
+                    );
+                    $ResponseBody = json_encode($ResponsePayload);
+
+                    http_response_code(404);
+                    header('Content-Type: application/json');
+                    header('Content-Size: ' . strlen($ResponseBody));
+                    print($ResponseBody);
+                    exit();
                 }
 
             });

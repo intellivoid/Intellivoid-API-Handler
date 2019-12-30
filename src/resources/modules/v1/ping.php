@@ -97,6 +97,7 @@
                 'message' => 'pong',
                 'reference_code' => null
             );
+
             $this->response_content = json_encode($ResponsePayload);
         }
     }
