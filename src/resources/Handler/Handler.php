@@ -126,7 +126,7 @@
                         'success' => false,
                         'response_code' => 400,
                         'error' => array(
-                            'error_code' => 0,
+                            'error_code' => 1,
                             'type' => "SERVER",
                             "message" => "The given version for this API is not supported"
                         ),
@@ -212,6 +212,31 @@
         }
 
         /**
+         * Returns a module not available response
+         * @param string $message
+         */
+        public static function moduleNotAvailableResponse(string $message)
+        {
+            $ResponsePayload = array(
+                'success' => false,
+                'response_code' => 403,
+                'error' => array(
+                    'error_code' => 2,
+                    'type' => "SERVICE",
+                    "message" => $message
+                ),
+                'reference_code' => null
+            );
+            $ResponseBody = json_encode($ResponsePayload);
+
+            http_response_code(403);
+            header('Content-Type: application/json');
+            header('Content-Size: ' . strlen($ResponseBody));
+            print($ResponseBody);
+            exit();
+        }
+
+        /**
          * Creates a route for the module
          *
          * @throws Exception
@@ -226,7 +251,14 @@
                 {
                     /** @var VersionConfiguration $VersionConfiguration */
                     $VersionConfiguration = self::$MainConfiguration->VersionConfigurations[$version];
+                    /** @var ModuleConfiguration $ModuleConfiguration */
                     $ModuleConfiguration = $VersionConfiguration->Modules[self::$PathRoutes[$version][$path]];
+
+                    if($ModuleConfiguration->Available == false)
+                    {
+                        self::moduleNotAvailableResponse($ModuleConfiguration->UnavailableMessage);
+                        exit();
+                    }
 
                     /** @var Module $ModuleObject */
                     $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);

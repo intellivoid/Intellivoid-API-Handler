@@ -31,6 +31,13 @@
         public $Available;
 
         /**
+         * The message to display when this module is not available
+         *
+         * @var string
+         */
+        public $UnavailableMessage;
+
+        /**
          * Indicates if this module requires authentication
          *
          * @var bool
@@ -48,6 +55,7 @@
                 'script' => $this->Script,
                 'path' => $this->Path,
                 'available' => (bool)$this->Available,
+                'unavailable_message' => $this->UnavailableMessage,
                 'authentication_required' => (bool)$this->AuthenticationRequired
             );
         }
@@ -75,6 +83,11 @@
             if(isset($data['available']))
             {
                 $ModuleConfigurationObject->Available = (bool)$data['available'];
+            }
+
+            if(isset($data['unavailable_message']))
+            {
+                $ModuleConfigurationObject->UnavailableMessage = $data['unavailable_message'];
             }
 
             if(isset($data['authentication_required']))

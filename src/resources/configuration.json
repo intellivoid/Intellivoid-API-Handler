@@ -3,7 +3,7 @@
 	"DOCUMENTATION_URL": "https://example.com/",
 	"BASE_PATH": "/openblu",
 	"AVAILABLE": true,
-	"UNAVAILABLE_MESSAGE": "This API configuration is not available right now",
+	"UNAVAILABLE_MESSAGE": "This API service is not available right now",
 	"VERSION_CONFIGURATIONS": [
 		{
 			"VERSION": "v1",
@@ -21,7 +21,13 @@
 			"MODULES": [
 				{
 					"script": "ping", "path": "tests/ping",
-					"available": true, "authentication_required": true
+					"available": true, "authentication_required": true,
+					"unavailable_message": "This module is not available at the moment"
+				},
+				{
+					"script": "download", "path": "tests/download",
+					"available": true, "authentication_required": true,
+					"unavailable_message": "This module is not available at the moment"
 				}
 			]
 		}
