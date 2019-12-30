@@ -6,6 +6,7 @@
     // Define the directory locations
     use Exception;
     use Handler\Abstracts\Module;
+    use Handler\GenericResponses\ResourceNotAvailable;
     use Handler\GenericResponses\ResourceNotFound;
     use Handler\GenericResponses\Root;
     use Handler\GenericResponses\UnsupportedVersion;
@@ -24,6 +25,8 @@
     // Auto-Include the core files
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Interfaces' . DIRECTORY_SEPARATOR . 'Response.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Abstracts' . DIRECTORY_SEPARATOR . 'Module.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotAvailable.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotFound.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'Root.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'UnsupportedVersion.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Objects' . DIRECTORY_SEPARATOR . 'Library.php');
@@ -187,30 +190,6 @@
             return $module_object;
         }
 
-        /**
-         * Returns a module not available response
-         * @param string $message
-         */
-        public static function moduleNotAvailableResponse(string $message)
-        {
-            $ResponsePayload = array(
-                'success' => false,
-                'response_code' => 403,
-                'error' => array(
-                    'error_code' => 2,
-                    'type' => "SERVICE",
-                    "message" => $message
-                ),
-                'reference_code' => null
-            );
-            $ResponseBody = json_encode($ResponsePayload);
-
-            http_response_code(403);
-            header('Content-Type: application/json');
-            header('Content-Size: ' . strlen($ResponseBody));
-            print($ResponseBody);
-            exit();
-        }
 
         /**
          * Creates a route for the module
@@ -232,7 +211,7 @@
 
                     if($ModuleConfiguration->Available == false)
                     {
-                        self::moduleNotAvailableResponse($ModuleConfiguration->UnavailableMessage);
+                        ResourceNotAvailable::executeResponse($ModuleConfiguration->UnavailableMessage);
                         exit();
                     }
 
