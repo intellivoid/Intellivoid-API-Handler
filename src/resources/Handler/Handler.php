@@ -190,6 +190,34 @@
             return $module_object;
         }
 
+        /**
+         * Processes the request of the module and returns the response
+         *
+         * @param Module $module
+         */
+        public static function processModuleResponse(Module $module)
+        {
+            // Process the request
+            try
+            {
+                $module->processRequest();
+            }
+            catch(Exception $exception)
+            {
+                print("error");
+            }
+
+            header('Content-Type: ' . $module->getContentType());
+            header('Content-Size: ' . $module->getContentLength());
+
+            // Create the response
+            if($module->isFile())
+            {
+                header("Content-disposition: attachment; filename=\"" . basename($module->getFileName()) . "\"");
+            }
+
+            print($module->getBodyContent());
+        }
 
         /**
          * Creates a route for the module
@@ -217,27 +245,7 @@
 
                     /** @var Module $ModuleObject */
                     $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);
-
-                    // Process the request
-                    try
-                    {
-                        $ModuleObject->processRequest();
-                    }
-                    catch(Exception $exception)
-                    {
-                        print("error");
-                    }
-
-                    header('Content-Type: ' . $ModuleObject->getContentType());
-                    header('Content-Size: ' . $ModuleObject->getContentLength());
-
-                    // Create the response
-                    if($ModuleObject->isFile())
-                    {
-                        header("Content-disposition: attachment; filename=\"" . basename($ModuleObject->getFileName()) . "\"");
-                    }
-
-                    print($ModuleObject->getBodyContent());
+                    self::processModuleResponse($ModuleObject);
                     exit();
                 }
                 else
