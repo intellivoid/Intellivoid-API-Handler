@@ -90,6 +90,13 @@
         private static $IntellivoidAPI;
 
         /**
+         * The beginning of the timer to determine the execution time
+         *
+         * @var float
+         */
+        private static $TimerBegin;
+
+        /**
          * Loads the local configuration to memory
          *
          * @throws Exception
@@ -313,6 +320,26 @@
             }
 
             print($module->getBodyContent());
+        }
+
+        /**
+         * Starts the timer to determine the execution time of the request
+         *
+         * @return bool
+         */
+        private static function startTimer(): bool
+        {
+            self::$TimerBegin = microtime(true);
+        }
+
+        /**
+         * Stops the timer and returns the total execution time of the request
+         *
+         * @return float
+         */
+        private static function stopTimer(): float
+        {
+            return (float)(microtime(true) - self::$TimerBegin);
         }
 
         /**

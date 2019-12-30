@@ -152,7 +152,7 @@
             return array(
                 'id' => (int)$this->ID,
                 'access_key' => $this->AccessKey,
-                'last_changed_access_key' => (int)$this->LastActivity,
+                'last_changed_access_key' => (int)$this->LastChangedAccessKey,
                 'application_id' => (int)$this->ApplicationID,
                 'subscription_id' => (int)$this->SubscriptionID,
                 'status' => (int)$this->Status,
