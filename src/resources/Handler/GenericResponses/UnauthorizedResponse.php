@@ -21,8 +21,7 @@
                     'error_code' => 0,
                     'type' => "CLIENT",
                     "message" => "Unauthorized Access, Authentication is required"
-                ),
-                'reference_code' => null
+                )
             );
             $ResponseBody = json_encode($ResponsePayload);
 

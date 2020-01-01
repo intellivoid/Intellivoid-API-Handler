@@ -244,8 +244,7 @@
                     $ResponsePayload = array(
                         'success' => true,
                         'response_code' => 200,
-                        'modules' => $Modules,
-                        'reference_code' => null
+                        'modules' => $Modules
                     );
                     $ResponseBody = json_encode($ResponsePayload);
 

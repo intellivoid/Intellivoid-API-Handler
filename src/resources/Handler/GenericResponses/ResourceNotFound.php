@@ -21,8 +21,7 @@
                     'error_code' => 0,
                     'type' => "SERVER",
                     "message" => "The requested resource/action is invalid or not found"
-                ),
-                'reference_code' => null
+                )
             );
             $ResponseBody = json_encode($ResponsePayload);
 

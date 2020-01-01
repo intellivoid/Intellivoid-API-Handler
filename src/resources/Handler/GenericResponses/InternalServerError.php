@@ -49,8 +49,7 @@
             $ResponsePayload = array(
                 'success' => false,
                 'response_code' => 500,
-                'error' => $error_details,
-                'reference_code' => null
+                'error' => $error_details
             );
             $ResponseBody = json_encode($ResponsePayload);
 

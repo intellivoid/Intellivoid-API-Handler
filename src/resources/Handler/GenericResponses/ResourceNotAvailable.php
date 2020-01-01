@@ -22,8 +22,7 @@
                     'error_code' => 2,
                     'type' => "SERVICE",
                     "message" => $message
-                ),
-                'reference_code' => null
+                )
             );
             $ResponseBody = json_encode($ResponsePayload);
 

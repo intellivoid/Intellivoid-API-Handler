@@ -23,8 +23,7 @@
                 'payload' => array(
                     'service_name' => Handler::$MainConfiguration->Name,
                     'documentation' => Handler::$MainConfiguration->DocumentationUrl
-                ),
-                'reference_code' => null
+                )
             );
             $ResponseBody = json_encode($ResponsePayload);
 

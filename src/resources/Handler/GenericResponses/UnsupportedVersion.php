@@ -22,8 +22,7 @@
                     'error_code' => 1,
                     'type' => "SERVER",
                     "message" => "The given version for this API is not supported"
-                ),
-                'reference_code' => null
+                )
             );
             $ResponseBody = json_encode($ResponsePayload);
 
