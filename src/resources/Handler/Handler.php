@@ -320,6 +320,7 @@
         private static function startTimer(): bool
         {
             self::$TimerBegin = microtime(true);
+            return true;
         }
 
         /**
