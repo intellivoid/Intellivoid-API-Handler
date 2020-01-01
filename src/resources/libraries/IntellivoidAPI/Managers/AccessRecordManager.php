@@ -73,7 +73,7 @@
                     $rate_limit_type = $this->intellivoidAPI->getDatabase()->real_escape_string(RateLimitName::IntervalLimit);
 
                     /** @var IntervalLimit $rate_limit_configuration */
-                    $rate_limit_configuration = ZiProto::encode($rate_limit_configuration->toArray());
+                    $rate_limit_configuration = ZiProto::encode($rate_limit_configuration);
                     $rate_limit_configuration = $this->intellivoidAPI->getDatabase()->real_escape_string($rate_limit_configuration);
                     break;
 
