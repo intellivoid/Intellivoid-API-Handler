@@ -4,7 +4,7 @@
     namespace IntellivoidAPI\Managers;
 
 
-    use IntellivoidAPI\Abstracts\SearchMethods\AccessRecordSearchMethod;
+    use IntellivoidAPI\Abstracts\SearchMethods\RequestRecordSearchMethod;
     use IntellivoidAPI\Exceptions\DatabaseException;
     use IntellivoidAPI\Exceptions\InvalidSearchMethodException;
     use IntellivoidAPI\Exceptions\RequestRecordNotFoundException;
@@ -218,18 +218,17 @@
          * @throws RequestRecordNotFoundException
          * @noinspection PhpUnused
          */
-        public function
-        getRequestRecord(string $search_method, $value): RequestRecord
+        public function getRequestRecord(string $search_method, $value): RequestRecord
         {
             /** @noinspection DuplicatedCode */
             switch($search_method)
             {
-                case AccessRecordSearchMethod::byId:
+                case RequestRecordSearchMethod::byId:
                     $search_method = $this->intellivoidAPI->getDatabase()->real_escape_string($search_method);
                     $value = (int)$value;
                     break;
 
-                case AccessRecordSearchMethod::byAccessKey:
+                case RequestRecordSearchMethod::byReferenceId:
                     $search_method = $this->intellivoidAPI->getDatabase()->real_escape_string($search_method);
                     $value = $this->intellivoidAPI->getDatabase()->real_escape_string($value);
                     break;

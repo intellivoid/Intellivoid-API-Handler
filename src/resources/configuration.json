@@ -34,6 +34,11 @@
 					"script": "whoami", "path": "tests/whoami",
 					"available": true, "authentication_required": true,
 					"unavailable_message": "This module is not available at the moment"
+				},
+				{
+					"script": "error", "path": "tests/error",
+					"available": true, "authentication_required": true,
+					"unavailable_message": "This module is not available at the moment"
 				}
 			]
 		}

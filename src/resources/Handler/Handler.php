@@ -19,6 +19,7 @@
     use Handler\Objects\ModuleConfiguration;
     use Handler\Objects\VersionConfiguration;
     use IntellivoidAPI\Abstracts\SearchMethods\AccessRecordSearchMethod;
+    use IntellivoidAPI\Abstracts\SearchMethods\RequestRecordSearchMethod;
     use IntellivoidAPI\Exceptions\AccessRecordNotFoundException;
     use IntellivoidAPI\Exceptions\DatabaseException;
     use IntellivoidAPI\Exceptions\InvalidSearchMethodException;
@@ -294,37 +295,6 @@
         }
 
         /**
-         * Processes the request of the module and returns the response
-         *
-         * @param Module $module
-         * @return string
-         */
-        public static function processModuleResponse(Module $module): string
-        {
-            // Process the request
-            try
-            {
-                $module->processRequest();
-            }
-            catch(Exception $exception)
-            {
-                InternalServerError::executeResponse($exception);
-                exit();
-            }
-
-            header('Content-Type: ' . $module->getContentType());
-            header('Content-Size: ' . $module->getContentLength());
-
-            // Create the response
-            if($module->isFile())
-            {
-                header("Content-disposition: attachment; filename=\"" . basename($module->getFileName()) . "\"");
-            }
-
-            return $module->getBodyContent();
-        }
-
-        /**
          * Starts the timer to determine the execution time of the request
          *
          * @return bool
@@ -545,12 +515,58 @@
                     /** @var Module $ModuleObject */
                     $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);
                     $ModuleObject->access_record = $AccessRecord;
+
+                    // Process the request
                     self::startTimer();
-                    $Output = self::processModuleResponse($ModuleObject);
+
+                    $ModuleException = null;
+
+                    try
+                    {
+                        $ModuleObject->processRequest();
+
+                        header('Content-Type: ' . $ModuleObject->getContentType());
+                        header('Content-Size: ' . $ModuleObject->getContentLength());
+
+                        // Create the response
+                        if($ModuleObject->isFile())
+                        {
+                            header("Content-disposition: attachment; filename=\"" . basename($ModuleObject->getFileName()) . "\"");
+                        }
+                    }
+                    catch(Exception $exception)
+                    {
+                        $ModuleException = $exception;
+                        //InternalServerError::executeResponse($exception);
+                        //exit();
+                    }
+
                     $ExecutionTime = self::stopTimer();
                     self::logRequest($AccessRecord, $version, $ModuleObject, $ExecutionTime);
                     self::setHeaders();;
-                    print($Output);
+
+                    // Update the last used state
+                    $AccessRecord->LastActivity = (int)time();
+                    $IntellivoidAPI = self::getIntellivoidAPI();
+                    $IntellivoidAPI->getAccessKeyManager()->updateAccessRecord($AccessRecord);
+
+                    if($ModuleException == null)
+                    {
+                        print($ModuleObject->getBodyContent());
+                    }
+                    else
+                    {
+                        $RequestRecordObject = $IntellivoidAPI->getRequestRecordManager()->getRequestRecord(
+                            RequestRecordSearchMethod::byReferenceId, self::$ReferenceCode
+                        );
+
+                        $IntellivoidAPI->getExceptionRecordManager()->recordException(
+                            $RequestRecordObject->ID, $AccessRecord, $ModuleException
+                        );
+
+                        InternalServerError::executeResponse($ModuleException);
+                    }
+
                     exit();
                 }
                 else
