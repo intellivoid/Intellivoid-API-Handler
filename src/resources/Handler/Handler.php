@@ -23,6 +23,7 @@
     use IntellivoidAPI\Exceptions\InvalidSearchMethodException;
     use IntellivoidAPI\IntellivoidAPI;
     use IntellivoidAPI\Objects\AccessRecord;
+    use IntellivoidAPI\Objects\RequestRecordEntry;
 
     define("HANDLER_DIRECTORY", __DIR__, false);
     define("LIBRARIES_DIRECTORY", __DIR__ . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . 'libraries', false);
@@ -35,6 +36,7 @@
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Interfaces' . DIRECTORY_SEPARATOR . 'Response.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Abstracts' . DIRECTORY_SEPARATOR . 'Module.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'InternalServerError.php');
+    require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'InvalidUserAgentResponse.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ModuleListingResponse.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotAvailable.php');
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'GenericResponses' . DIRECTORY_SEPARATOR . 'ResourceNotFound.php');
@@ -331,6 +333,35 @@
         private static function stopTimer(): float
         {
             return (float)(microtime(true) - self::$TimerBegin);
+        }
+
+        private static function logRequest(AccessRecord $accessRecord, string $version, Module $module, float $response_time)
+        {
+            $IntellivoidAPI = self::getIntellivoidAPI();
+
+            $uri_parts = explode('?', $_SERVER['REQUEST_URI'], 2);
+
+            $RequestRecordEntry = new RequestRecordEntry();
+            $RequestRecordEntry->ApplicationID = (int)$accessRecord->ApplicationID;
+            $RequestRecordEntry->AccessRecordID = (int)$accessRecord->ID;
+            $RequestRecordEntry->Path = $uri_parts[0];
+            $RequestRecordEntry->Version = $version;
+            $RequestRecordEntry->ResponseContentType = $module->getContentType();
+            $RequestRecordEntry->ResponseLength = (int)$module->getContentLength();
+            $RequestRecordEntry->ResponseTime = (float)$response_time;
+            $RequestRecordEntry->ResponseCode = $module->getResponseCode();
+            $RequestRecordEntry->UserAgent =
+
+            //$IntellivoidAPI->getRequestRecordManager()->logRecord(
+            //)
+        }
+
+        private static function verifyRequest()
+        {
+            if(isset($_SERVER['HTTP_USER_AGENT']) == false)
+            {
+
+            }
         }
 
         /**
