@@ -103,6 +103,13 @@
         private static $TimerBegin;
 
         /**
+         * The reference code that is generated during runtime
+         *
+         * @var string
+         */
+        private static $ReferenceCode;
+
+        /**
          * Loads the local configuration to memory
          *
          * @throws Exception
@@ -337,6 +344,14 @@
             return (float)(microtime(true) - self::$TimerBegin);
         }
 
+        /**
+         * Logs the request and sets the global variable for the reference number
+         *
+         * @param AccessRecord $accessRecord
+         * @param string $version
+         * @param Module $module
+         * @param float $response_time
+         */
         private static function logRequest(AccessRecord $accessRecord, string $version, Module $module, float $response_time)
         {
             $IntellivoidAPI = self::getIntellivoidAPI();
@@ -357,8 +372,14 @@
             $RequestRecordEntry->RequestPayload = self::getParameters(true, true);
             $RequestRecordEntry->RequestMethod = $_SERVER['REQUEST_METHOD'];
 
-            //$IntellivoidAPI->getRequestRecordManager()->logRecord(
-            //)
+            try
+            {
+                self::$ReferenceCode = $IntellivoidAPI->getRequestRecordManager()->logRecord($RequestRecordEntry);
+            }
+            catch (DatabaseException $e)
+            {
+                self::$ReferenceCode = "Unknown";
+            }
         }
 
         /**
@@ -438,7 +459,6 @@
 
         /**
          * Verifies if the request is valid
-         * @noinspection PhpUnusedPrivateMethodInspection
          */
         private static function verifyRequest()
         {

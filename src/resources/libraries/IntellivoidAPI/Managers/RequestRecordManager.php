@@ -40,10 +40,12 @@
          * Logs a request record into the database
          *
          * @param RequestRecordEntry $requestRecordEntry
-         * @return bool
+         * @return string
          * @throws DatabaseException
+         * @noinspection PhpUnusedLocalVariableInspection
+         * @noinspection PhpUnused
          */
-        public function logRecord(RequestRecordEntry $requestRecordEntry): bool
+        public function logRecord(RequestRecordEntry $requestRecordEntry): string
         {
             $access_record_id = 0;
             $application_id = 0;
@@ -197,7 +199,7 @@
 
             if($QueryResults == true)
             {
-                return true;
+                return $reference_id;
             }
             else
             {
@@ -214,8 +216,10 @@
          * @throws DatabaseException
          * @throws InvalidSearchMethodException
          * @throws RequestRecordNotFoundException
+         * @noinspection PhpUnused
          */
-        public function getRequestRecord(string $search_method, $value): RequestRecord
+        public function
+        getRequestRecord(string $search_method, $value): RequestRecord
         {
             /** @noinspection DuplicatedCode */
             switch($search_method)
