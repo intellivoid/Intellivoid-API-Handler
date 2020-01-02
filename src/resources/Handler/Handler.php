@@ -438,6 +438,7 @@
 
         /**
          * Verifies if the request is valid
+         * @noinspection PhpUnusedPrivateMethodInspection
          */
         private static function verifyRequest()
         {
@@ -473,7 +474,8 @@
 
             if($UnsupportedRequestMethod)
             {
-                Unsu
+                UnsupportedVersion::executeResponse();
+                exit();
             }
         }
 
@@ -507,6 +509,8 @@
                         ResourceNotAvailable::executeResponse($ModuleConfiguration->UnavailableMessage);
                         exit();
                     }
+
+                    self::verifyRequest();
 
                     $AccessRecord = new AccessRecord();
                     $AccessRecord->ID = 0;
