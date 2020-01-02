@@ -297,8 +297,9 @@
          * Processes the request of the module and returns the response
          *
          * @param Module $module
+         * @return string
          */
-        public static function processModuleResponse(Module $module)
+        public static function processModuleResponse(Module $module): string
         {
             // Process the request
             try
@@ -320,7 +321,7 @@
                 header("Content-disposition: attachment; filename=\"" . basename($module->getFileName()) . "\"");
             }
 
-            print($module->getBodyContent());
+            return $module->getBodyContent();
         }
 
         /**
@@ -534,6 +535,7 @@
 
                     $AccessRecord = new AccessRecord();
                     $AccessRecord->ID = 0;
+                    $AccessRecord->ApplicationID = 0;
 
                     if($ModuleConfiguration->AuthenticationRequired)
                     {
@@ -543,7 +545,12 @@
                     /** @var Module $ModuleObject */
                     $ModuleObject = self::getModuleObject($version, $ModuleConfiguration);
                     $ModuleObject->access_record = $AccessRecord;
-                    self::processModuleResponse($ModuleObject);
+                    self::startTimer();
+                    $Output = self::processModuleResponse($ModuleObject);
+                    $ExecutionTime = self::stopTimer();
+                    self::logRequest($AccessRecord, $version, $ModuleObject, $ExecutionTime);
+                    self::setHeaders();;
+                    print($Output);
                     exit();
                 }
                 else
@@ -553,6 +560,18 @@
                 }
 
             });
+        }
+
+        /**
+         * Sets the required headers for Intellivoid-API
+         */
+        private static function setHeaders()
+        {
+            header('X-Powered-By: Intellivoid-API');
+            header('X-Server-Version: 2.0');
+            header('X-Organization: Intellivoid Technologies');
+            header('X-Author: Zi Xing Narrakas');
+            header('X-Request-ID: ' . self::$ReferenceCode);
         }
 
         /**
