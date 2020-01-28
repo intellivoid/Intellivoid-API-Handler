@@ -127,6 +127,7 @@
             switch($search_by)
             {
                 case AccessRecordSearchMethod::byId:
+                case AccessRecordSearchMethod::bySubscriptionID:
                     $search_by = $this->intellivoidAPI->getDatabase()->real_escape_string($search_by);
                     $value = (int)$value;
                     break;

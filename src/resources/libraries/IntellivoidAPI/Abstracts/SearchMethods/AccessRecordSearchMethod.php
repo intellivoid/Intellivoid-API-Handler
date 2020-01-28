@@ -20,4 +20,10 @@
          * (Can be changed by the user)
          */
         const byAccessKey = 'access_key';
+
+        /**
+         * Searches by Subscription ID
+         */
+        const bySubscriptionID = 'subscription_id';
+
     }

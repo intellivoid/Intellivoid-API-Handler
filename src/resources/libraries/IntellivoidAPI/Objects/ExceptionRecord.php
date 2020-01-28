@@ -124,7 +124,7 @@
 
             if(isset($data['application_id']))
             {
-                $ExceptionRecordObject->ApplicationID = (int)$data['request_record_id'];
+                $ExceptionRecordObject->ApplicationID = (int)$data['application_id'];
             }
 
             if(isset($data['access_record_id']))
