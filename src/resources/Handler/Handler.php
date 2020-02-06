@@ -22,7 +22,6 @@
     use IntellivoidAPI\Abstracts\SearchMethods\RequestRecordSearchMethod;
     use IntellivoidAPI\Exceptions\AccessRecordNotFoundException;
     use IntellivoidAPI\Exceptions\DatabaseException;
-    use IntellivoidAPI\Exceptions\InvalidSearchMethodException;
     use IntellivoidAPI\IntellivoidAPI;
     use IntellivoidAPI\Objects\AccessRecord;
     use IntellivoidAPI\Objects\RequestRecordEntry;
