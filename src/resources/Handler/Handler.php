@@ -527,6 +527,7 @@
 
                         header('Content-Type: ' . $ModuleObject->getContentType());
                         header('Content-Size: ' . $ModuleObject->getContentLength());
+                        http_response_code($ModuleObject->getResponseCode());
 
                         // Create the response
                         if($ModuleObject->isFile())
