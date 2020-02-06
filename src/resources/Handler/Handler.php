@@ -152,7 +152,7 @@
          * @param bool $post
          * @return array
          */
-        private static function getParameters(bool $get=true, bool $post=true): array
+        public static function getParameters(bool $get=true, bool $post=true): array
         {
             $parameters = array();
 
