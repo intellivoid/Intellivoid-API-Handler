@@ -63,7 +63,7 @@
         /**
          * Returns an array which represents this object
          *
-         * @return array
+         * @return VersionConfiguration[]
          */
         public function toArray(): array
         {

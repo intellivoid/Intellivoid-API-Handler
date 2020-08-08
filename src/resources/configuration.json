@@ -19,6 +19,9 @@
 					"CHECK_EXISTS": true
 				}
 			},
+			"PPM": [
+				{"package": "net.intellivoid.api", "version": "latest", "import_dependencies": true, "throw_error": true}
+			],
 			"MODULES": [
 				{
 					"script": "ping", "path": "tests/ping",

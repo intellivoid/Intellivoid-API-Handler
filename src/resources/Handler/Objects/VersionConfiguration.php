@@ -33,9 +33,16 @@
         /**
          * Array of library objects
          *
-         * @var array
+         * @var Library[]
          */
         public $Libraries;
+
+        /**
+         * List of required PPM modules
+         *
+         * @var PpmDependency[]
+         */
+        public $PpmPackages;
 
         /**
          * Array of module objects
@@ -53,11 +60,16 @@
         {
             $libraries = array();
             $modules = array();
+            $ppm_packages = array();
 
-            /** @var Library $library */
             foreach($this->Libraries as $library)
             {
                 $libraries[$library->Name] = $library->toArray(false);
+            }
+
+            foreach($this->PpmPackages as $package)
+            {
+                $ppm_packages[] = $package->toArray();
             }
 
             /** @var ModuleConfiguration $module */
@@ -71,6 +83,7 @@
                 'AVAILABLE' => (bool)$this->Available,
                 'UNAVAILABLE_MESSAGE' => $this->UnavailableMessage,
                 'LIBRARIES' => $libraries,
+                'PPM' => $ppm_packages,
                 'MODULES' => $modules
             );
         }
@@ -106,6 +119,16 @@
                 {
                     $LibraryConfiguration = Library::fromArray($configuration, $library_name);
                     $VersionConfigurationObject->Libraries[$library_name] = $LibraryConfiguration;
+                }
+            }
+
+            if(isset($data['PPM']))
+            {
+                $VersionConfigurationObject->PpmPackages = [];
+
+                foreach($data['PPM'] as $datum)
+                {
+                    $VersionConfigurationObject->PpmPackages[] = PpmDependency::fromArray($datum);
                 }
             }
 
