@@ -54,7 +54,18 @@
     require_once(HANDLER_DIRECTORY . DIRECTORY_SEPARATOR . 'Router.php');
 
     // Load Intellivoid API
-    require_once(LIBRARIES_DIRECTORY . DIRECTORY_SEPARATOR . 'IntellivoidAPI' . DIRECTORY_SEPARATOR . 'IntellivoidAPI.php');
+    if(defined("PPM") == false)
+    {
+        /** @noinspection PhpIncludeInspection */
+        require("ppm");
+
+        if(defined("PPM") == false)
+        {
+            throw new Exception("Cannot import PPM, is it installed?");
+        }
+    }
+
+    ppm::import("net.intellivoid.api", "latest");
 
     /**
      * Class Handler
@@ -618,9 +629,12 @@
                 self::$MainConfiguration->VersionConfigurations[$versionConfiguration->Version] = $versionConfiguration;
                 self::$PathRoutes[$versionConfiguration->Version] = [];
 
-                foreach($versionConfiguration->Libraries as $library)
+                if($versionConfiguration->Libraries !== null)
                 {
-                    $library->import();
+                    foreach($versionConfiguration->Libraries as $library)
+                    {
+                        $library->import();
+                    }
                 }
 
                 foreach($versionConfiguration->PpmPackages as $package)
