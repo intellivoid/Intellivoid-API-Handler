@@ -91,7 +91,7 @@
          */
         public function getFileName(): string
         {
-            return null;
+            return;
         }
 
         /**
